@@ -1,21 +1,79 @@
 # VoidWalkr
 
-A minimal, sleep-friendly YouTube viewer. Paste a link, get a video, no
+A minimal, sleep-friendly YouTube viewer. Paste a link, get a video — no
 recommendations, no autoplay queue, no end-of-video rabbit holes.
 
-The site is **plain static files** — no build step, no bundler, no dependencies, no
-backend. Every page is HTML, CSS and vanilla JavaScript.
+**This repository is the live site.** [voidwalkr.com](https://voidwalkr.com) is
+served straight from `main` on GitHub Pages, and every file in this repository
+is a file the server is actually sending to visitors. There is no separate
+copy, no private branch and no build server — if you fork this, your fork is
+the site.
+
+The whole thing is **plain static files**: HTML, CSS and vanilla JavaScript.
+No framework, no bundler, no dependencies, no backend, no database.
 
 ---
 
-## Deploy to GitHub Pages
+## Built with AI — and proud of it
+
+**VoidWalkr was written by AI, with me directing it.** Every page, stylesheet
+and line of JavaScript in this repository came out of an AI coding assistant.
+I'm not going to quietly bury that in a footnote at the bottom, and I'm not
+going to apologise for it: **this tool would not exist without it.**
+
+What that means in practice:
+
+- **The code here is the real code.** There is no hidden layer, no black-box
+  service behind the page, and nothing in this project that I can't explain
+  line by line.
+- **It stays simple on purpose.** Plain HTML, CSS and vanilla JavaScript — no
+  framework to inherit opinions from, no build step to trust, no dependency
+  tree to audit.
+- **The AI wrote it; I decided what it should be, checked that it actually
+  works, and shipped it.** That is the same division of labour as any other
+  tool, and the responsibility is mine.
+
+If you were expecting a carefully hand-typed repository, this is not that —
+and I would rather you knew upfront than found out later.
+
+---
+
+## Reuse it — but not the name
+
+**The code is free.** It is released under the [MIT License](LICENSE). Fork
+it, copy it, change it, ship it, sell it, fold it into a bigger project. No
+permission needed, no attribution required, no "please ask first". A link back
+to voidwalkr.com is always welcome, never required.
+
+**The name stays mine.** "VoidWalkr", the logo, and `voidwalkr.com` are *not*
+covered by that licence. The MIT licence covers code; it does not grant a
+brand. If you reuse this, give it your own name and your own domain — the
+code is the gift, the name is the trademark, and I am keeping it.
+
+---
+
+## What it does
+
+- Paste a YouTube link, get a clean player. Nothing else on the page.
+- Short links work too: `https://voidwalkr.com/?v=dQw4w9WgXcQ`.
+- `&fs=1` on a short link opens the player fullscreen.
+- Four background themes, remembered in `localStorage` under
+  `voidwalkr.theme`.
+- No accounts, no cookies, no analytics, no tracking.
+- A Ko-fi widget on the home page, if you want to buy me a caffeinated drink.
+  It is the only third party that loads anything, and it loads nothing unless
+  you click it.
+
+---
+
+## Run your own copy
 
 ### 1. Push the repository
 
 ```bash
 git init
 git add -A
-git commit -m "VoidWalkr — GitHub Pages port"
+git commit -m "VoidWalkr"
 git remote add origin git@github.com:<your-github-username>/VoidWalkr.git
 git push -u origin main
 ```
@@ -25,13 +83,13 @@ git push -u origin main
 In the repo: **Settings → Pages → Build and deployment → Source: Deploy from
 a branch**, branch `main`, folder `/ (root)`. Save.
 
-GitHub will publish the site at `https://<your-github-username>.github.io/VoidWalkr/`
+GitHub publishes it at `https://<your-github-username>.github.io/VoidWalkr/`
 within a minute.
 
-### 3. Point `voidwalkr.com` at it
+### 3. Point a custom domain at it
 
 The `CNAME` file in the repository root already contains `voidwalkr.com`, so
-GitHub will offer to set up the custom domain for you. You just need the DNS
+GitHub will offer to set up the custom domain for you. You need these DNS
 records at your registrar (or at Cloudflare, if that is where the zone lives):
 
 | Type | Name | Value | Proxy |
@@ -40,16 +98,16 @@ records at your registrar (or at Cloudflare, if that is where the zone lives):
 | `A` | `@` | `185.199.109.153` | DNS only |
 | `A` | `@` | `185.199.110.153` | DNS only |
 | `A` | `@` | `185.199.111.153` | DNS only |
-| `CNAME` | `www` | `gafail.github.io` | DNS only |
+| `CNAME` | `www` | `<your-github-username>.github.io` | DNS only |
 
 > **If your DNS is on Cloudflare:** set every record to **DNS only** (grey
 > cloud). Cloudflare's orange-cloud proxy does not work in front of a
 > GitHub Pages custom domain — GitHub issues the certificate and serves the
 > site itself.
 
-The four `A` records are what GitHub's docs specify for an apex domain. A
-single `CNAME` at `@` pointing to `gafail.github.io` also works, because
-Cloudflare flattens it at the apex.
+Those four `A` records are what GitHub's docs specify for an apex domain. A
+single `CNAME` at `@` pointing at `<your-github-username>.github.io` also
+works, because Cloudflare flattens it at the apex.
 
 ### 4. Order of operations matters
 
@@ -62,36 +120,36 @@ GitHub runs a DNS check when you save the custom domain, and it only queues
 the Let's Encrypt request if that check passes. If you set the custom domain
 while DNS still points somewhere else, the request is never re-queued
 automatically once DNS is corrected — and the site ends up serving the default
-`*.github.io` certificate, which does not match `voidwalkr.com`, so browsers
-show `ERR_CERT_COMMON_NAME_INVALID`.
+`*.github.io` certificate, which does not match your domain, so browsers show
+`ERR_CERT_COMMON_NAME_INVALID`.
 
 If you hit that, the fix is to restart the check:
 
 ```bash
 # Clear the custom domain (wait ~5-10 minutes for the old state to clear)
-gh api --method PUT repos/Gafail/VoidWalkr/pages \
+gh api --method PUT repos/<owner>/<repo>/pages \
   -F cname= -F build_type=legacy \
   -F source[branch]=main -F source[path]=/
 
 # Then re-add it, now that DNS is correct
-gh api --method PUT repos/Gafail/VoidWalkr/pages \
-  -F cname=voidwalkr.com -F build_type=legacy \
+gh api --method PUT repos/<owner>/<repo>/pages \
+  -F cname=example.com -F build_type=legacy \
   -F source[branch]=main -F source[path]=/
 
 # Check whether the certificate has been issued
-gh api repos/Gafail/VoidWalkr/pages --jq '.https_certificate'
+gh api repos/<owner>/<repo>/pages --jq '.https_certificate'
 ```
 
 The same sequence works in the UI: clear the custom domain field, **Save**,
 wait, then type it again and **Save**.
 
 Once `https_certificate` shows a certificate, tick **Enforce HTTPS** (or
-`gh api --method PUT repos/Gafail/VoidWalkr/pages -F https_enforced=true`).
+`gh api --method PUT repos/<owner>/<repo>/pages -F https_enforced=true`).
 
-> **Note on `www`:** the `www` CNAME record points at `gafail.github.io`,
-> but this site is a *project* site. GitHub redirects `www.voidwalkr.com` to
-> the apex automatically because the `CNAME` file names only `voidwalkr.com`.
-
+> **Note on `www`:** the `www` CNAME record points at `<user>.github.io`, but
+> this site is a *project* site. GitHub redirects `www.example.com` to the
+> apex automatically, because the `CNAME` file names only the apex domain.
+> That is the behaviour you want.
 
 ### Serving from a sub-path instead
 
@@ -119,8 +177,10 @@ home.html             generated copy of index.html — serves the clean /home UR
 viewer.html           standalone viewer (viewer.html?id=VIDEO_ID)
 invalid.html          "that link is broken" page with a 15s countdown
 404.html              generated from 404.template.html
+404.template.html     source for the error page
 privacy.html          privacy policy
 ads.txt               IAB ads.txt (declares no programmatic sellers)
+LICENSE               MIT licence for the code
 
 css/style.css         layout and components
 css/themes.css        the four background themes
@@ -135,9 +195,8 @@ js/main.js            home page behaviour: parse, navigate, copy link
 js/invalid.js         countdown and redirect for the error page
 js/kofi.js            Ko-fi widget bootstrap
 
-
 tests/                unit + browser test suites
-build.sh              regenerates home.html and 404.html
+build.sh              regenerates home.html, 404.html and sitemap.xml
 ```
 
 ### Why `home.html` exists
@@ -146,42 +205,40 @@ GitHub Pages has no rewrite rules, but it does serve `home.html` at the
 extensionless URL `/home`. `build.sh` keeps `home.html` byte-identical to
 `index.html`, and the "Back to home" link points at `/home`.
 
-GitHub Pages has no rewrite rules, but it does serve `home.html` at the
-extensionless URL `/home`. `build.sh` keeps `home.html` byte-identical to
-`index.html`, and the "Back to home" link points at `/home`.
-
 ---
 
-## What changed, and why
+## Design notes
 
-These are the deliberate design decisions:
-
-**Routing is sub-path safe.** No path in the app is hard-coded with a leading slash. Every internal link is now built from the resolved site base, so
-the site works both at a domain root and under `/VoidWalkr/`.
+**Routing is sub-path safe.** The site has to work both at a domain root and
+under `/<repo>/`, so no path in the application is hard-coded with a leading
+slash. Every internal link is built from the resolved site base, which is what
+`js/base.js` exists for.
 
 **`404.html` is self-contained.** GitHub Pages serves 404 responses with
 `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; …`,
 which blocks external stylesheets and scripts. The error page therefore
 carries its CSS inline and redirects with an absolute path, so it renders
-correctly at any URL depth. `build.sh` generates it from
-`404.template.html`.
+correctly at any URL depth. `build.sh` generates it from `404.template.html`.
 
 **Security headers are meta tags.** GitHub Pages does not let you set
 response headers at all, so the Content Security Policy, `Referrer-Policy`
 and `Permissions-Policy` are declared with `<meta http-equiv>` tags instead.
-The inline scripts were moved into their own files so a strict policy — one
-without `unsafe-inline` for scripts — actually holds.
+The inline scripts were moved into their own files (`js/boot.js`,
+`js/kofi.js`, `js/viewer-page.js`) so a strict policy — one without
+`unsafe-inline` for scripts — actually holds.
 
 **The parser checks the host.** It accepts a URL only if it is genuinely
-YouTube, so a `vimeo.com/watch?v=…` style link is rejected with "That
-doesn't look like a YouTube link." instead of failing later with a confusing
-embed error. It also understands `youtube.com/live/VIDEO_ID` URLs.
+YouTube, so a `vimeo.com/watch?v=…` style link is rejected with "That doesn't
+look like a YouTube link." instead of failing later with a confusing embed
+error. It also understands `youtube.com/live/VIDEO_ID` URLs.
 
-**`fs=1` does something.** The short-link format carries an `fs` parameter,
-and it opens the player fullscreen. Browsers only grant fullscreen from a
-user gesture, so the first click or keypress opens it if the automatic
-request is rejected.
+**`fs=1` does something.** The short-link format carries an `fs` parameter, and
+it opens the player fullscreen. Browsers only grant fullscreen from a user
+gesture, so the first click or keypress opens it if the automatic request is
+rejected.
 
+**No analytics.** None run, anywhere. The privacy page says exactly what
+happens.
 
 ---
 
@@ -191,27 +248,24 @@ request is rejected.
 ./tests/run.sh
 ```
 
-This runs three suites:
+This runs two suites:
 
 1. **Unit tests** for the URL parser and the site-base resolver.
 2. **Browser tests** in Chromium against a GitHub Pages-style static server,
-   with the site mounted at a sub-path so the project-site deployment shape
-   is exercised.
-3. **Browser tests** against the real production origin
-   (`https://voidwalkr.com`, served from this working tree via request
-   interception) which play an actual YouTube video and assert there are no
-   Content-Security-Policy violations.
+   with the site mounted at a sub-path so the project-site deployment shape is
+   exercised — plus a suite against the real domain, which plays an actual
+   YouTube video and asserts there are no Content-Security-Policy violations.
 
-There is a fourth suite for verifying the deployed site itself:
+There is a third suite for verifying a deployed site:
 
 ```bash
 node tests/production.test.js
 ```
 
 It maps `voidwalkr.com` to GitHub's Pages IPs inside the browser, so you can
-verify the real deployment before switching DNS over, and again afterwards.
+verify a real deployment without touching your DNS.
 
-The browser suite needs Chromium and Playwright:
+The browser suites need Chromium and Playwright:
 
 ```bash
 npm install playwright
@@ -219,16 +273,12 @@ npm install playwright
 
 ---
 
-
----
-
 ## Known limitations on GitHub Pages
 
 - **No custom response headers.** GitHub Pages does not allow them. The CSP
   is declared via `<meta>` tags, which is slightly weaker than a real header
-  (notably `frame-ancestors` cannot be set this way). If you want true
-  header control, put a proxy in front of GitHub Pages and set the headers
-  there.
+  (notably `frame-ancestors` cannot be set this way). If you want true header
+  control, put a proxy in front of GitHub Pages and set the headers there.
 - **No per-path cache headers.** GitHub Pages applies a uniform
   `max-age=600` to everything. The asset filenames are not content-hashed, so
   a long immutable cache would be wrong anyway — add a query string when you

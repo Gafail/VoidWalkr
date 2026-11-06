@@ -2,10 +2,8 @@
  *
  * The domain is mapped to GitHub's Pages IPs inside the browser
  * (--host-resolver-rules), so this test exercises the real deployment
- * without depending on DNS.
- *
- * This exercises the real deployment: the real Pages infrastructure, the
- * real CNAME routing, the real 404 handling and the real CSP.
+ * without depending on DNS: the real Pages infrastructure, the real CNAME
+ * routing, the real 404 handling and the real CSP.
  */
 'use strict';
 
