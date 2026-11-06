@@ -7,11 +7,14 @@
   <meta http-equiv="refresh" content="5;url={{VW_BASE}}index.html" />
   <meta name="theme-color" content="#0a0a0c" />
   <!--
-    GitHub Pages serves 404 responses with
-      Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'
-    which blocks external stylesheets, scripts and images. The stylesheet is
-    therefore inlined here by build.sh, and the redirect uses an absolute
-    path so it resolves regardless of how deep the missing URL was.
+    This page carries its CSS inline and redirects with an absolute path.
+
+    GitHub's own built-in 404 page is served under
+      Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; ...
+    which blocks external stylesheets and scripts. Inlining the CSS means this
+    page renders correctly whichever 404 GitHub serves, and the absolute
+    redirect means it lands on the site root no matter how deep the missing
+    URL was. build.sh generates this file from 404.template.html.
   -->
   <style id="vw-404-styles">
 {{VW_STYLES}}

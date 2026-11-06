@@ -1,0 +1,14 @@
+{
+  "name": "voidwalkr",
+  "version": "1.0.0",
+  "description": "A minimal, sleep-friendly YouTube viewer.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "./tests/run.sh",
+    "test:prod": "node tests/production.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

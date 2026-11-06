@@ -99,8 +99,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", TYPES.get(ext, "application/octet-stream"))
         self.send_header("Content-Length", str(len(data)))
         if status == 404:
-            # GitHub Pages serves 404 responses under this exact policy,
-            # which blocks external stylesheets, scripts and images.
+            # GitHub serves its built-in 404 page under this exact policy,
+            # which blocks external stylesheets, scripts and images. Applying
+            # it here too keeps the error page honest: it has to render with
+            # the CSS inlined and nothing external.
             self.send_header(
                 "Content-Security-Policy",
                 "default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'",

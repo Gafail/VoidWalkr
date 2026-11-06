@@ -4,34 +4,45 @@ A minimal, sleep-friendly YouTube viewer. Paste a link, get a video — no
 recommendations, no autoplay queue, no end-of-video rabbit holes.
 
 **This repository is the live site.** [voidwalkr.com](https://voidwalkr.com) is
-served straight from `main` on GitHub Pages, and every file in this repository
-is a file the server is actually sending to visitors. There is no separate
-copy, no private branch and no build server — if you fork this, your fork is
-the site.
+served straight from `main` on GitHub Pages. There is no separate copy and no
+private branch — if you fork this, your fork is the site.
 
-The whole thing is **plain static files**: HTML, CSS and vanilla JavaScript.
-No framework, no bundler, no dependencies, no backend, no database.
+Note that GitHub Pages publishes *every* file in the repository, not just the
+pages: `tests/`, `build.sh` and `404.template.html` are all reachable at
+`voidwalkr.com/…`. That is normal for a static host, and nothing in them is
+secret.
+
+The site itself is **plain static files**: HTML, CSS and vanilla JavaScript.
+No framework, no bundler, no backend, no database. The only npm dependency
+anywhere in the repository is Playwright, and it is used by the tests.
 
 ---
 
 ## Built with AI — and proud of it
 
-**VoidWalkr was written by AI, with me directing it.** Every page, stylesheet
-and line of JavaScript in this repository came out of an AI coding assistant.
-I'm not going to quietly bury that in a footnote at the bottom, and I'm not
-going to apologise for it: **this tool would not exist without it.**
+**VoidWalkr was built with AI.** The code in this repository was written by an
+AI coding assistant, working with me. I'm not going to quietly bury that in a
+footnote at the bottom, and I'm not going to apologise for it: **this tool
+would not exist without it.**
 
 What that means in practice:
 
-- **The code here is the real code.** There is no hidden layer, no black-box
-  service behind the page, and nothing in this project that I can't explain
-  line by line.
+- **VoidWalkr's own code is all here.** There is no VoidWalkr server, no
+  backend API, no account system and no database behind the page — the site
+  is the files in this repository, and the only external services it reaches
+  are Ko-fi, and YouTube plus Google's own infrastructure when you play a
+  video. All of them are named in the privacy page.
 - **It stays simple on purpose.** Plain HTML, CSS and vanilla JavaScript — no
-  framework to inherit opinions from, no build step to trust, no dependency
-  tree to audit.
+  framework to inherit opinions from, no dependency tree to audit. The site
+  itself has no dependencies at all; the test suite needs Playwright, and that
+  is the only package in `package.json`. The one script in the repo,
+  `build.sh`, just regenerates three files — it is optional, and the site
+  works without ever running it.
 - **The AI wrote it; I decided what it should be, checked that it actually
-  works, and shipped it.** That is the same division of labour as any other
-  tool, and the responsibility is mine.
+  works, and shipped it.** I have not memorised every line of it, and I am
+  not going to pretend otherwise — that is what working with an AI is. What I
+  do know is what it does, why it does it, and that it is not hiding anything
+  from you.
 
 If you were expecting a carefully hand-typed repository, this is not that —
 and I would rather you knew upfront than found out later.
@@ -42,8 +53,10 @@ and I would rather you knew upfront than found out later.
 
 **The code is free.** It is released under the [MIT License](LICENSE). Fork
 it, copy it, change it, ship it, sell it, fold it into a bigger project. No
-permission needed, no attribution required, no "please ask first". A link back
-to voidwalkr.com is always welcome, never required.
+permission needed, no "please ask first". You do not have to credit VoidWalkr
+in your app or link back — though a link is always welcome. (The one thing
+MIT does ask is that you keep the copyright notice and the licence text with
+any copy of the code.)
 
 **The name stays mine.** "VoidWalkr", the logo, and `voidwalkr.com` are *not*
 covered by that licence. The MIT licence covers code; it does not grant a
@@ -59,10 +72,15 @@ code is the gift, the name is the trademark, and I am keeping it.
 - `&fs=1` on a short link opens the player fullscreen.
 - Four background themes, remembered in `localStorage` under
   `voidwalkr.theme`.
-- No accounts, no cookies, no analytics, no tracking.
+- No accounts, and VoidWalkr itself sets no cookies and runs no analytics.
+  Watch out for the two exceptions below — they are not VoidWalkr's fault,
+  but they are real.
 - A Ko-fi widget on the home page, if you want to buy me a caffeinated drink.
-  It is the only third party that loads anything, and it loads nothing unless
-  you click it.
+  The widget's script loads from Ko-fi's servers as soon as the page loads,
+  and Ko-fi's own privacy policy applies from that point on.
+- When you watch a video, YouTube's iframe API loads and YouTube sets its own
+  cookies and does its own tracking. None of that is VoidWalkr, but it is
+  not nothing either — the privacy page spells it out.
 
 ---
 
@@ -118,12 +136,13 @@ This is the part that trips people up, so it is worth being explicit:
 
 GitHub runs a DNS check when you save the custom domain, and it only queues
 the Let's Encrypt request if that check passes. If you set the custom domain
-while DNS still points somewhere else, the request is never re-queued
-automatically once DNS is corrected — and the site ends up serving the default
+while DNS still points somewhere else, the request is not retried on its own
+once DNS is corrected — and the site ends up serving the default
 `*.github.io` certificate, which does not match your domain, so browsers show
 `ERR_CERT_COMMON_NAME_INVALID`.
 
-If you hit that, the fix is to restart the check:
+If you hit that, the fix is to restart the check — remove the custom domain,
+save, wait, then add it back:
 
 ```bash
 # Clear the custom domain (wait ~5-10 minutes for the old state to clear)
@@ -142,6 +161,15 @@ gh api repos/<owner>/<repo>/pages --jq '.https_certificate'
 
 The same sequence works in the UI: clear the custom domain field, **Save**,
 wait, then type it again and **Save**.
+
+Two more things that stop a certificate being issued:
+
+- **CAA records.** If your zone has any, at least one must be
+  `CAA 0 issue "letsencrypt.org"`, or GitHub cannot get a certificate.
+- **Extra records at `@`.** Additional `A`, `AAAA`, `ALIAS` or `ANAME` records
+  on the apex — or a `CNAME` on `www` pointing somewhere other than
+  `<user>.github.io` — can prevent the certificate from generating. Only the
+  records in the table above.
 
 Once `https_certificate` shows a certificate, tick **Enforce HTTPS** (or
 `gh api --method PUT repos/<owner>/<repo>/pages -F https_enforced=true`).
@@ -212,13 +240,15 @@ extensionless URL `/home`. `build.sh` keeps `home.html` byte-identical to
 **Routing is sub-path safe.** The site has to work both at a domain root and
 under `/<repo>/`, so no path in the application is hard-coded with a leading
 slash. Every internal link is built from the resolved site base, which is what
-`js/base.js` exists for.
+`js/base.js` exists for. The one deliberate exception is the generated
+`404.html`, whose redirect has to be absolute — see below.
 
-**`404.html` is self-contained.** GitHub Pages serves 404 responses with
-`Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; …`,
+**`404.html` is self-contained.** GitHub's own built-in 404 page is served
+under `Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; …`,
 which blocks external stylesheets and scripts. The error page therefore
 carries its CSS inline and redirects with an absolute path, so it renders
-correctly at any URL depth. `build.sh` generates it from `404.template.html`.
+correctly at any URL depth and whichever 404 GitHub chooses to serve.
+`build.sh` generates it from `404.template.html`.
 
 **Security headers are meta tags.** GitHub Pages does not let you set
 response headers at all, so the Content Security Policy, `Referrer-Policy`
@@ -237,8 +267,11 @@ it opens the player fullscreen. Browsers only grant fullscreen from a user
 gesture, so the first click or keypress opens it if the automatic request is
 rejected.
 
-**No analytics.** None run, anywhere. The privacy page says exactly what
-happens.
+**No analytics.** VoidWalkr runs none, anywhere — no tracking script, no
+tag manager, no analytics beacon. Third parties do their own thing when they
+are loaded: Ko-fi's widget pulls in its script (and a web font) on the home
+page, and YouTube's iframe API pulls in YouTube on the viewer. The privacy
+page says exactly what happens and who is responsible for it.
 
 ---
 
@@ -268,8 +301,12 @@ verify a real deployment without touching your DNS.
 The browser suites need Chromium and Playwright:
 
 ```bash
-npm install playwright
+npm install
+npx playwright install chromium
 ```
+
+`npm test` runs the local suites, `npm run test:prod` runs the deployment
+check.
 
 ---
 
@@ -288,4 +325,4 @@ npm install playwright
 
 ---
 
-VoidWalkr · No accounts · No cookies · No tracking
+VoidWalkr · No accounts · No tracking by VoidWalkr · See the privacy page

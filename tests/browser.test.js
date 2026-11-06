@@ -17,9 +17,9 @@
 'use strict';
 
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
-const { chromium } = require('/tmp/vwtest/node_modules/playwright');
+const { loadPlaywright, findChromium } = require('./helpers');
+const { chromium } = loadPlaywright();
 
 const SITE_ROOT = path.join(__dirname, '..');
 const LOCAL_BASE = process.argv[2] || 'http://127.0.0.1:8792/VoidWalkr';
@@ -41,21 +41,6 @@ function check(name, cond, detail) {
 
 function section(title) {
   console.log('\n' + title);
-}
-
-/* Locate a Chromium already in the Playwright cache so the suite does not
- * depend on a matching playwright package version. */
-function findChromium() {
-  const cache = path.join(os.homedir(), '.cache', 'ms-playwright');
-  if (!fs.existsSync(cache)) return undefined;
-  const dirs = fs.readdirSync(cache).filter((d) => d.startsWith('chromium-')).sort();
-  for (const d of dirs) {
-    for (const rel of ['chrome-linux64/chrome', 'chrome-linux/chrome']) {
-      const p = path.join(cache, d, rel);
-      if (fs.existsSync(p)) return p;
-    }
-  }
-  return undefined;
 }
 
 const MIME = {

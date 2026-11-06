@@ -7,10 +7,9 @@
  */
 'use strict';
 
-const fs = require('fs');
-const os = require('os');
 const path = require('path');
-const { chromium } = require('/tmp/vwtest/node_modules/playwright');
+const { loadPlaywright, findChromium } = require('./helpers');
+const { chromium } = loadPlaywright();
 
 const PAGES_IP = '185.199.108.153';
 const ID = 'dQw4w9WgXcQ';
@@ -27,16 +26,6 @@ function ck(name, cond, detail) {
     fail.push(m);
     console.log('  FAIL ' + m);
   }
-}
-
-function findChromium() {
-  const cache = path.join(os.homedir(), '.cache', 'ms-playwright');
-  const dirs = fs.readdirSync(cache).filter((d) => d.startsWith('chromium-')).sort();
-  for (const d of dirs) {
-    const p = path.join(cache, d, 'chrome-linux64/chrome');
-    if (fs.existsSync(p)) return p;
-  }
-  return undefined;
 }
 
 (async () => {

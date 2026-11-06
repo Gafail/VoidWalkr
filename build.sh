@@ -8,10 +8,10 @@
 #   1. Keeps home.html identical to index.html. GitHub Pages has no rewrite
 #      rules, so the clean URL "/home" needs a real home.html file to serve.
 #
-#   2. Generates 404.html from 404.template.html. GitHub Pages serves 404
-#      responses under a restrictive Content-Security-Policy that blocks
-#      external stylesheets, and it serves the error page at whatever URL
-#      was requested. So the CSS is inlined and the redirect points at the
+#   2. Generates 404.html from 404.template.html. GitHub's built-in 404 page
+#      is served under a restrictive Content-Security-Policy that blocks
+#      external stylesheets, and the error page is served at whatever URL was
+#      requested. So the CSS is inlined and the redirect points at the
 #      absolute site root.
 #
 # Usage:
@@ -81,7 +81,7 @@ fi
 # the site root no matter how deep the missing URL was.
 {
   echo '    /* Inlined from css/style.css, css/themes.css and css/invalid.css by build.sh.'
-  echo '       GitHub Pages blocks external stylesheets on 404 responses. */'
+  echo '       GitHub blocks external stylesheets on its 404 pages. */'
   for f in css/style.css css/themes.css css/invalid.css; do
     echo "    /* ---- $f ---- */"
     cat "$f"
