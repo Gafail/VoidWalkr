@@ -1,0 +1,48 @@
+body.is-invalid {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.vw-invalid-card {
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  background: var(--vw-card);
+  border: 1px solid var(--vw-border);
+  border-radius: var(--vw-radius);
+  padding: 36px 28px;
+  backdrop-filter: blur(6px);
+}
+
+.vw-invalid-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.vw-invalid-sub {
+  color: var(--vw-fg-dim);
+  font-size: 15px;
+  margin: 0 0 24px;
+}
+
+.vw-countdown {
+  font-family: var(--vw-mono);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, var(--vw-accent), var(--vw-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vw-go-home {
+  font-size: 15px;
+  padding: 12px 24px;
+}

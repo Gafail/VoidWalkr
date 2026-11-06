@@ -1,0 +1,3 @@
+# ads.txt — VoidWalkr has no programmatic ad sellers.
+# This file exists per IAB spec; absence can be flagged by some crawlers.
+# See https://iabtechlab.com/ads-txt/

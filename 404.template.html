@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VoidWalkr — Page not found</title>
+  <meta http-equiv="refresh" content="5;url={{VW_BASE}}index.html" />
+  <meta name="theme-color" content="#0a0a0c" />
+  <!--
+    GitHub Pages serves 404 responses with
+      Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'
+    which blocks external stylesheets, scripts and images. The stylesheet is
+    therefore inlined here by build.sh, and the redirect uses an absolute
+    path so it resolves regardless of how deep the missing URL was.
+  -->
+  <style id="vw-404-styles">
+{{VW_STYLES}}
+  </style>
+</head>
+<body class="theme-dark is-invalid">
+  <main class="vw-invalid-card" role="main">
+    <h1 class="vw-invalid-title">Page not found</h1>
+    <p class="vw-invalid-sub">Redirecting you home in a few seconds…</p>
+    <p style="margin-top:16px;"><a href="{{VW_BASE}}index.html" style="color:var(--vw-accent-2);">Go now</a></p>
+  </main>
+</body>
+</html>

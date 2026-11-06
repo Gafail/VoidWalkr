@@ -1,0 +1,16 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Node (only used for the browser test harness)
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Local test artefacts
+/tmp/
+*.log

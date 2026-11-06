@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VoidWalkr — Link not found</title>
+  <meta name="theme-color" content="#0a0a0c" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; base-uri 'self'" />
+  <meta name="referrer" content="no-referrer-when-downgrade" />
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+  <link rel="icon" href="assets/logos/favicon.ico" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/themes.css" />
+  <link rel="stylesheet" href="css/invalid.css" />
+</head>
+<body class="theme-dark is-invalid">
+  <main class="vw-invalid-card" role="main">
+    <h1 class="vw-invalid-title">That link is broken</h1>
+    <p class="vw-invalid-sub">We'll send you back to the start in <span id="countdown-num">15</span> seconds.</p>
+    <div class="vw-countdown" id="countdown-num-big" aria-hidden="true">15</div>
+    <button id="go-home-btn" class="vw-go-home" type="button">Go home now</button>
+  </main>
+
+  <script src="js/base.js"></script>
+  <script src="js/invalid.js"></script>
+</body>
+</html>

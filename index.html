@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VoidWalkr — Distraction-free YouTube</title>
+  <meta name="description" content="A minimal, sleep-friendly YouTube viewer. No clutter, no cookies, no accounts. Just paste a link and play." />
+  <meta name="theme-color" content="#0a0a0c" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; media-src 'self' https:; script-src 'self' https://www.youtube.com https://storage.ko-fi.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src https://www.youtube.com https://ko-fi.com; connect-src 'self' https://www.youtube.com https://ko-fi.com https://storage.ko-fi.com; font-src 'self' data: https://fonts.gstatic.com; base-uri 'self'" />
+  <meta name="referrer" content="no-referrer-when-downgrade" />
+  <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()" />
+  <link rel="icon" type="image/x-icon" href="assets/logos/favicon.ico" />
+  <link rel="icon" type="image/webp" sizes="512x512" href="assets/logos/voidwalkr.webp" />
+  <link rel="apple-touch-icon" type="image/webp" sizes="180x180" href="assets/logos/apple-touch-icon.webp" />
+  <link rel="stylesheet" href="css/style.css?v=20260626c" />
+  <link rel="stylesheet" href="css/themes.css?v=20260626c" />
+  <script src="js/boot.js"></script>
+  <style>
+    /* When arriving via a ?v= short link, hide the home UI before paint
+       so there's no flash of the input form before the viewer mounts. */
+    html.vw-route-viewer body > *:not(.vw-viewer):not(.vw-back-home) { display: none !important; }
+    html.vw-route-viewer body { background: #0a0a0c; }
+  </style>
+</head>
+<body class="theme-dark">
+  <a class="vw-logo" href="index.html" aria-label="VoidWalkr home">
+    <img class="vw-logo-mark" src="assets/logos/voidwalkr.webp" alt="" width="96" height="96" />
+    <span>VoidWalkr</span>
+  </a>
+
+  <main id="home-ui" class="vw-card vw-stack" role="main">
+    <p class="vw-blurb">
+      Watch YouTube without the noise. No recommendations, no autoplay queue, no
+      end-of-video rabbit holes. Just the video you came for, in a player designed
+      for unwinding.
+    </p>
+    <h1 class="vw-section-title">Paste a YouTube link</h1>
+
+    <div class="vw-input-wrap">
+      <input
+        id="url-input"
+        type="text"
+        inputmode="url"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        placeholder="https://www.youtube.com/watch?v=…"
+        aria-label="YouTube URL"
+      />
+      <div id="input-error" class="vw-input-error" role="alert" aria-live="polite"></div>
+    </div>
+
+    <fieldset id="theme-selector" class="vw-theme-grid" style="border:0;padding:0;margin:0;">
+      <legend class="vw-section-title vw-section-title--dim">Theme</legend>
+      <label class="vw-theme-card">
+        <input type="radio" name="theme" value="dark" />
+        <div class="vw-swatch theme-dark-sw" aria-hidden="true"></div>
+        <div class="vw-theme-name">Dark Void</div>
+      </label>
+      <label class="vw-theme-card">
+        <input type="radio" name="theme" value="neon" />
+        <div class="vw-swatch theme-neon-sw" aria-hidden="true"></div>
+        <div class="vw-theme-name">Neon Fade</div>
+      </label>
+      <label class="vw-theme-card">
+        <input type="radio" name="theme" value="blur" />
+        <div class="vw-swatch theme-blur-sw" aria-hidden="true"></div>
+        <div class="vw-theme-name">Soft Blur</div>
+      </label>
+      <label class="vw-theme-card">
+        <input type="radio" name="theme" value="midnight" />
+        <div class="vw-swatch theme-midnight-sw" aria-hidden="true"></div>
+        <div class="vw-theme-name">Midnight Gradient</div>
+      </label>
+    </fieldset>
+
+    <div class="vw-row">
+      <button id="load-btn" class="vw-btn-primary" type="button">Load Video</button>
+    </div>
+
+    <div class="vw-row vw-row-center vw-row-stack-center">
+      <button id="copy-link-btn" type="button">Copy VoidWalkr Link</button>
+      <span id="copy-link-status" class="vw-copy-status" aria-live="polite"></span>
+    </div>
+
+    <div class="vw-kofi-wrap">
+      <script type="text/javascript" src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+      <script type="text/javascript" src="js/kofi.js"></script>
+    </div>
+
+    <p class="vw-license-note">Commercial and educational use welcome.</p>
+  </main>
+
+  <footer class="vw-footer">
+    VoidWalkr · No accounts · No cookies · No tracking · <a href="privacy.html" style="color:var(--vw-fg-dim);">Privacy</a>
+  </footer>
+
+  <div id="viewer-mount" hidden></div>
+
+  <script src="js/base.js"></script>
+  <script src="js/parseId.js"></script>
+  <script src="js/viewer.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
