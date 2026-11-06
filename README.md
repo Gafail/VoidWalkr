@@ -34,17 +34,63 @@ The `CNAME` file in the repository root already contains `voidwalkr.com`, so
 GitHub will offer to set up the custom domain for you. You just need the DNS
 records at your registrar (or at Cloudflare, if that is where the zone lives):
 
-| Type | Name | Value |
-|------|------|-------|
-| `CNAME` | `@` | `<your-github-username>.github.io` |
-| `CNAME` | `www` | `<your-github-username>.github.io` |
+| Type | Name | Value | Proxy |
+|------|------|-------|-------|
+| `A` | `@` | `185.199.108.153` | DNS only |
+| `A` | `@` | `185.199.109.153` | DNS only |
+| `A` | `@` | `185.199.110.153` | DNS only |
+| `A` | `@` | `185.199.111.153` | DNS only |
+| `CNAME` | `www` | `gafail.github.io` | DNS only |
 
-> **If your DNS is on Cloudflare:** set the records to **DNS only** (grey
+> **If your DNS is on Cloudflare:** set every record to **DNS only** (grey
 > cloud). Cloudflare's orange-cloud proxy does not work in front of a
-> GitHub Pages custom domain.
+> GitHub Pages custom domain — GitHub issues the certificate and serves the
+> site itself.
 
-Then, in **Settings → Pages**, set **Custom domain** to `voidwalkr.com` and
-tick **Enforce HTTPS**. GitHub provisions the certificate automatically.
+The four `A` records are what GitHub's docs specify for an apex domain. A
+single `CNAME` at `@` pointing to `gafail.github.io` also works, because
+Cloudflare flattens it at the apex.
+
+### 4. Order of operations matters
+
+This is the part that trips people up, so it is worth being explicit:
+
+1. Set the DNS records **first**.
+2. **Then** set the custom domain in **Settings → Pages**.
+
+GitHub runs a DNS check when you save the custom domain, and it only queues
+the Let's Encrypt request if that check passes. If you set the custom domain
+while DNS still points somewhere else, the request is never re-queued
+automatically once DNS is corrected — and the site ends up serving the default
+`*.github.io` certificate, which does not match `voidwalkr.com`, so browsers
+show `ERR_CERT_COMMON_NAME_INVALID`.
+
+If you hit that, the fix is to restart the check:
+
+```bash
+# Clear the custom domain (wait ~5-10 minutes for the old state to clear)
+gh api --method PUT repos/Gafail/VoidWalkr/pages \
+  -F cname= -F build_type=legacy \
+  -F source[branch]=main -F source[path]=/
+
+# Then re-add it, now that DNS is correct
+gh api --method PUT repos/Gafail/VoidWalkr/pages \
+  -F cname=voidwalkr.com -F build_type=legacy \
+  -F source[branch]=main -F source[path]=/
+
+# Check whether the certificate has been issued
+gh api repos/Gafail/VoidWalkr/pages --jq '.https_certificate'
+```
+
+The same sequence works in the UI: clear the custom domain field, **Save**,
+wait, then type it again and **Save**.
+
+Once `https_certificate` shows a certificate, tick **Enforce HTTPS** (or
+`gh api --method PUT repos/Gafail/VoidWalkr/pages -F https_enforced=true`).
+
+> **Note on `www`:** the `www` CNAME record points at `gafail.github.io`,
+> but this site is a *project* site. GitHub redirects `www.voidwalkr.com` to
+> the apex automatically because the `CNAME` file names only `voidwalkr.com`.
 
 
 ### Serving from a sub-path instead
