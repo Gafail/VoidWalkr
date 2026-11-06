@@ -202,6 +202,15 @@ This runs three suites:
    interception) which play an actual YouTube video and assert there are no
    Content-Security-Policy violations.
 
+There is a fourth suite for verifying the deployed site itself:
+
+```bash
+node tests/production.test.js
+```
+
+It maps `voidwalkr.com` to GitHub's Pages IPs inside the browser, so you can
+verify the real deployment before switching DNS over, and again afterwards.
+
 The browser suite needs Chromium and Playwright:
 
 ```bash
